@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LifeManager.Models;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace LifeManager
 {
@@ -32,7 +34,32 @@ namespace LifeManager
         private void LoadExpenses()
         {
             using AppDbContext db = new AppDbContext();
+
+            var allExpenses = db.Expenses.ToList();
             gridExpenses.ItemsSource = db.Expenses.ToList();
+
+            chartExpenses.Series.Clear();
+
+            var expensesByCategory = allExpenses
+                .GroupBy(e => string.IsNullOrWhiteSpace(e.Category) ? "Uncategorized" : e.Category)
+                .Select(g => new { CategoryName = g.Key, TotalAmount = g.Sum(e => e.Amount) })
+                .ToList();
+
+            SeriesCollection pieSeries = new SeriesCollection();
+
+            foreach (var category in expensesByCategory)
+            {
+                pieSeries.Add(new PieSeries
+                {
+                    Title = category.CategoryName,
+                    Values = new ChartValues<decimal> { category.TotalAmount },
+                    DataLabels = true, // Afiseaza valorile/procentul vizual pe grafic
+                    LabelPoint = point => $"{point.Y} ({point.Participation:P0})" // Formateaza textul
+                });
+            }
+
+            chartExpenses.Series = pieSeries;
+
         }
 
         private void btnAddExpense_Click(object sender, RoutedEventArgs e)
