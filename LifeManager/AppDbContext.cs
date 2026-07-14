@@ -10,6 +10,7 @@ namespace LifeManager
     {
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<TodoItem> TodoItems { get; set; }
+        public DbSet<TaskItem> Tasks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

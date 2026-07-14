@@ -3,77 +3,159 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         ui:WindowHelper.UseModernWindowStyle="True"
         ui:ThemeManager.RequestedTheme="Dark"
-        Title="Life Manager" Height="600" Width="1050" WindowStartupLocation="CenterScreen"
+        Title="Life Manager" Height="700" Width="1100" WindowStartupLocation="CenterScreen"
         Background="#0F172A">
 
-    <Grid Margin="25">
-        <!-- Impartim ecranul in 2 coloane: Stanga (60%) si Dreapta (40%) -->
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="6*"/>
-            <ColumnDefinition Width="4*"/>
-        </Grid.ColumnDefinitions>
+    <TabControl Background="Transparent" BorderThickness="0" Margin="10">
+        <TabControl.Resources>
+            <Style TargetType="TabItem">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border x:Name="Border" Padding="25,12" Margin="0,0,5,0" Background="Transparent" CornerRadius="6,6,0,0">
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="#1E293B"/>
+                                    <Setter Property="Foreground" Value="#38BDF8"/>
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="0,0,0,2"/>
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#38BDF8"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter Property="Foreground" Value="#94A3B8"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+            </Style>
+        </TabControl.Resources>
 
-        <!-- PARTEA STANGA: Tot ce aveam pana acum -->
-        <Grid Grid.Column="0" Margin="0,0,20,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <TabItem Header="FINANCES">
+            <Grid Margin="15,20,15,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="4*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" Margin="0,0,20,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="EXPENSE DASHBOARD" FontSize="22" FontWeight="SemiBold" Foreground="#38BDF8" Margin="0,0,0,20" Grid.Row="0"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,40,0,25">
+                        <TextBox x:Name="txtTitle" ui:ControlHelper.PlaceholderText="Expense Title" Width="140" Margin="0,0,10,0" VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+                        <TextBox x:Name="txtAmount" ui:ControlHelper.PlaceholderText="Amount" Width="80" Margin="0,0,10,0" VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+                        <TextBox x:Name="txtCategory" ui:ControlHelper.PlaceholderText="Category" Width="120" Margin="0,0,15,0" VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+                        <Button x:Name="btnAddExpense" Content="ADD EXPENSE" Width="130" Height="38" Click="btnAddExpense_Click" Background="#2563EB" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    </StackPanel>
+                    <DataGrid x:Name="gridExpenses" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" Background="#1E293B" RowBackground="#1E293B" AlternatingRowBackground="#0F172A" Foreground="White" BorderThickness="1" BorderBrush="#334155" HeadersVisibility="Column" GridLinesVisibility="None" RowHeight="35">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#0F172A"/>
+                                <Setter Property="Foreground" Value="#38BDF8"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="Padding" Value="15,12,15,12"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#334155"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                    </DataGrid>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                        <Button x:Name="btnEdit" Content="EDIT SELECTED" Width="130" Height="35" Margin="0,0,15,0" Background="#475569" Foreground="White" BorderThickness="0" Click="btnEdit_Click"/>
+                        <Button x:Name="btnDelete" Content="DELETE SELECTED" Width="140" Height="35" Background="#EF4444" Foreground="White" BorderThickness="0" Click="btnDelete_Click"/>
+                    </StackPanel>
+                </Grid>
+                <Border Grid.Column="1" Background="#1E293B" CornerRadius="8" Padding="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="SPENDING BY CATEGORY" FontSize="16" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,10" Grid.Row="0" HorizontalAlignment="Center"/>
+                        <lvc:PieChart x:Name="chartExpenses" Grid.Row="1" LegendLocation="Bottom" InnerRadius="50" AnimationsSpeed="0:0:0.5"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </TabItem>
 
-            <TextBlock Text="EXPENSE DASHBOARD" FontSize="22" FontWeight="SemiBold" Foreground="#38BDF8" Margin="0,0,0,20" Grid.Row="0"/>
-
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,40,0,25">
-                <TextBox x:Name="txtTitle" ui:ControlHelper.PlaceholderText="Expense Title" Width="140" Margin="0,0,10,0" 
-                         VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
-                <TextBox x:Name="txtAmount" ui:ControlHelper.PlaceholderText="Amount" Width="80" Margin="0,0,10,0" 
-                         VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
-                <TextBox x:Name="txtCategory" ui:ControlHelper.PlaceholderText="Category" Width="120" Margin="0,0,15,0" 
-                         VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
-                <Button x:Name="btnAddExpense" Content="ADD EXPENSE" Width="130" Height="38" Click="btnAddExpense_Click" 
-                        Background="#2563EB" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
-            </StackPanel>
-
-            <DataGrid x:Name="gridExpenses" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" 
-                      Background="#1E293B" RowBackground="#1E293B" AlternatingRowBackground="#0F172A"
-                      Foreground="White" BorderThickness="1" BorderBrush="#334155"
-                      HeadersVisibility="Column" GridLinesVisibility="None" RowHeight="35">
-                <DataGrid.ColumnHeaderStyle>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#0F172A"/>
-                        <Setter Property="Foreground" Value="#38BDF8"/>
-                        <Setter Property="FontWeight" Value="SemiBold"/>
-                        <Setter Property="FontSize" Value="13"/>
-                        <Setter Property="Padding" Value="15,12,15,12"/>
-                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                        <Setter Property="BorderBrush" Value="#334155"/>
-                    </Style>
-                </DataGrid.ColumnHeaderStyle>
-            </DataGrid>
-
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-                <Button x:Name="btnEdit" Content="EDIT SELECTED" Width="130" Height="35" Margin="0,0,15,0" 
-                        Background="#475569" Foreground="White" BorderThickness="0" Click="btnEdit_Click"/>
-                <Button x:Name="btnDelete" Content="DELETE SELECTED" Width="140" Height="35" 
-                        Background="#EF4444" Foreground="White" BorderThickness="0" Click="btnDelete_Click"/>
-            </StackPanel>
-        </Grid>
-
-        <!-- PARTEA DREAPTA: Graficul -->
-        <Border Grid.Column="1" Background="#1E293B" CornerRadius="8" Padding="15">
-            <Grid>
+        <TabItem Header="TASKS">
+            <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="SPENDING BY CATEGORY" FontSize="16" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,10" Grid.Row="0" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <TextBox x:Name="txtNewTask" ui:ControlHelper.PlaceholderText="NEW TASK..." Width="400" Margin="0,0,15,0" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+                    <Button x:Name="btnAddTask" Content="ADD TASK" Width="150" Height="38" Click="btnAddTask_Click" Background="#2563EB" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                </StackPanel>
 
-                <!-- InnerRadius face graficul de tip "gogoasa" (Donut), care arata mai modern decat cel plin -->
-                <lvc:PieChart x:Name="chartExpenses" Grid.Row="1" LegendLocation="Bottom" InnerRadius="50" AnimationsSpeed="0:0:0.5"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- TO DO -->
+                    <Border Grid.Column="0" Background="#162032" CornerRadius="8" Margin="0,0,10,0" Padding="10">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="TO DO" Foreground="#94A3B8" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <Button DockPanel.Dock="Bottom" Content="MOVE TO PROGRESS" Click="btnMoveToProgress_Click" Background="#2563EB" Foreground="White" BorderThickness="0" Height="40" Margin="0,10,0,0"/>
+                            <ListBox x:Name="listToDo" Background="Transparent" BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1E293B" CornerRadius="6" Padding="15" Margin="5" Width="260">
+                                            <TextBlock Text="{Binding Title}" Foreground="White" TextAlignment="Center" FontSize="15" FontWeight="ExtraBold" TextWrapping="Wrap"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Background="#162032" CornerRadius="8" Margin="10,0,10,0" Padding="10">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="IN PROGRESS" Foreground="#F59E0B" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <Button DockPanel.Dock="Bottom" Content="MOVE TO DONE" Click="btnMoveToDone_Click" Background="#10B981" Foreground="White" BorderThickness="0" Height="40" Margin="0,10,0,0"/>
+                            <ListBox x:Name="listInProgress" Background="Transparent" BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1E293B" CornerRadius="6" Padding="15" Margin="5" Width="260">
+                                            <TextBlock Text="{Binding Title}" Foreground="White" TextAlignment="Center" FontSize="15" FontWeight="ExtraBold" TextWrapping="Wrap"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Background="#162032" CornerRadius="8" Margin="10,0,0,0" Padding="10">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="DONE" Foreground="#10B981" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <Button DockPanel.Dock="Bottom" Content="DELETE" Click="btnDeleteTask_Click" Background="#EF4444" Foreground="White" BorderThickness="0" Height="40" Margin="0,10,0,0"/>
+                            <ListBox x:Name="listDone" Background="Transparent" BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1E293B" CornerRadius="6" Padding="15" Margin="5" Width="260">
+                                            <TextBlock Text="{Binding Title}" Foreground="White" TextAlignment="Center" FontSize="15" FontWeight="ExtraBold" TextWrapping="Wrap"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
+                    </Border>
+                </Grid>
             </Grid>
-        </Border>
-    </Grid>
+        </TabItem>
+    </TabControl>
 </Window>

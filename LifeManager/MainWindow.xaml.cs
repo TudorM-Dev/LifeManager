@@ -28,6 +28,7 @@ namespace LifeManager
             using AppDbContext db = new AppDbContext();
             db.Database.EnsureCreated();
             LoadExpenses();
+            LoadTasks();
             System.Diagnostics.Debug.WriteLine("DATABASE READY!");
         }
 
@@ -132,6 +133,67 @@ namespace LifeManager
 
             }
             else MessageBox.Show("Please select an expense from the table first.", "Selection Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void LoadTasks()
+        {
+            using AppDbContext db = new AppDbContext();
+            listToDo.ItemsSource = db.Tasks.Where(t => t.Status == "ToDo").ToList();
+            listInProgress.ItemsSource = db.Tasks.Where(t => t.Status == "InProgress").ToList();
+            listDone.ItemsSource = db.Tasks.Where(t => t.Status == "Done").ToList();
+        }
+
+        private void btnMoveToProgress_Click(object sender, RoutedEventArgs e)
+        {
+            if (listToDo.SelectedItem is TaskItem task)
+            {
+                using AppDbContext db = new AppDbContext();
+                var t = db.Tasks.Find(task.Id);
+                t.Status = "InProgress";
+                db.SaveChanges();
+                LoadTasks();
+            }
+        }
+
+        private void btnMoveToDone_Click(object sender, RoutedEventArgs e)
+        {
+            if (listInProgress.SelectedItem is TaskItem task)
+            {
+                using AppDbContext db = new AppDbContext();
+                var t = db.Tasks.Find(task.Id);
+                t.Status = "Done";
+                db.SaveChanges();
+                LoadTasks();
+            }
+        }
+
+        private void btnDeleteTask_Click(object sender, RoutedEventArgs e)
+        {
+            if (listDone.SelectedItem is TaskItem task)
+            {
+                using AppDbContext db = new AppDbContext();
+                db.Tasks.Remove(db.Tasks.Find(task.Id));
+                db.SaveChanges();
+                LoadTasks();
+            }
+        }
+
+        private void btnAddTask_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtNewTask.Text))
+            {
+                using AppDbContext db = new AppDbContext();
+                TaskItem newTask = new TaskItem
+                {
+                    Title = txtNewTask.Text.ToUpper(),
+                    Status = "ToDo"
+                };
+                db.Tasks.Add(newTask);
+                db.SaveChanges();
+
+                txtNewTask.Clear();
+                LoadTasks();
+            }
         }
 
     }
