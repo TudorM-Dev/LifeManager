@@ -1,12 +1,58 @@
 ﻿<Window x:Class="LifeManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LifeManager"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        ui:ThemeManager.RequestedTheme="Dark"
+        Title="Life Manager" Height="550" Width="850" WindowStartupLocation="CenterScreen"
+        Background="#0F172A">
 
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="EXPENSE DASHBOARD" FontSize="22" FontWeight="SemiBold" Foreground="#38BDF8" Margin="0,0,0,20" Grid.Row="0"/>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,40,0,25">
+            <TextBox x:Name="txtTitle" ui:ControlHelper.PlaceholderText="Expense Title" Width="180" Margin="0,0,15,0" 
+                     VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+
+            <TextBox x:Name="txtAmount" ui:ControlHelper.PlaceholderText="Amount" Width="100" Margin="0,0,15,0" 
+                     VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+
+            <TextBox x:Name="txtCategory" ui:ControlHelper.PlaceholderText="Category" Width="150" Margin="0,0,20,0" 
+                     VerticalAlignment="Center" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="10,8"/>
+
+            <Button x:Name="btnAddExpense" Content="ADD EXPENSE" Width="140" Height="38" Click="btnAddExpense_Click" 
+                    Background="#2563EB" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+        </StackPanel>
+
+        <DataGrid x:Name="gridExpenses" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" 
+                  Background="#1E293B" RowBackground="#1E293B" AlternatingRowBackground="#0F172A"
+                  Foreground="White" BorderThickness="1" BorderBrush="#334155"
+                  HeadersVisibility="Column" GridLinesVisibility="None" RowHeight="35">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#0F172A"/>
+                    <Setter Property="Foreground" Value="#38BDF8"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="Padding" Value="15,12,15,12"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    <Setter Property="BorderBrush" Value="#334155"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button x:Name="btnEdit" Content="EDIT SELECTED" Width="130" Height="35" Margin="0,0,15,0" 
+                    Background="#475569" Foreground="White" BorderThickness="0" Click="btnEdit_Click"/>
+
+            <Button x:Name="btnDelete" Content="DELETE SELECTED" Width="140" Height="35" 
+                    Background="#EF4444" Foreground="White" BorderThickness="0" Click="btnDelete_Click"/>
+        </StackPanel>
     </Grid>
 </Window>
